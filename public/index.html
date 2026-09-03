@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم سفينة بغداد - القائمة الرقمية الاحترافية</title>
+    <style>
+        :root {
+            --primary-color: #1b4332;
+            --accent-color: #d4af37;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --price-color: #c92a2a;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tahoma', 'Cairo', sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border-bottom: 4px solid var(--accent-color);
+        }
+        header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-color);
+            margin-bottom: 12px;
+            object-fit: cover;
+        }
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .category-section {
+            margin-bottom: 40px;
+        }
+        .category-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .menu-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #eeeeee;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+        }
+        .menu-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+        .menu-card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            background-color: #f1f3f5;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .menu-card:hover img {
+            transform: scale(1.04);
+        }
+        .card-content {
+            padding: 17px 15px 20px;
+            text-align: center;
+        }
+        .card-content h3 {
+            font-size: 1.08rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            line-height: 1.5;
+        }
+        .price {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--price-color);
+            direction: rtl;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 40px;
+            border-top: 3px solid var(--accent-color);
+        }
+        .search-box {
+            padding: 15px 0;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 2px solid #e5e5e5;
+            border-radius: 30px;
+            background: white;
+            font-size: 16px;
+            color: var(--text-color);
+            outline: none;
+            direction: rtl;
+            transition: 0.25s ease;
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            pointer-events: none;
+        }
+        .search-box input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12);
+        }
+        .search-box input::placeholder {
+            color: #999;
+        }
+        .image-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .image-modal img {
+            max-width: 95%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            color: #222;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .price-note { font-size: 0.9rem; }
+        .price-multi { display: flex; flex-direction: column; gap: 4px; }
+        .price-multi span { display: block; }
+        
+        .category-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+            white-space: nowrap;
+            direction: rtl;
+            scrollbar-width: none;
+        }
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+        .category-nav button {
+            flex-shrink: 0;
+            padding: 10px 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 30px;
+            background: white;
+            color: var(--primary-color);
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .category-nav button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        .category-nav button:first-child {
+            background: var(--primary-color);
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .category-nav {
+                padding: 10px;
+                gap: 8px;
+            }
+            .category-nav button {
+                padding: 9px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="image-modal" class="image-modal">
+        <button class="close-modal" onclick="closeImage()">✕</button>
+        <img id="modal-image" src="" alt="صورة الوجبة">
+    </div>
+
+    <nav class="category-nav" id="category-nav">
+        <!-- الأقسام راح تظهر هنا تلقائياً -->
+    </nav>
+
+    <header>
+        <img src="/images/logo.jpeg" alt="شعار سفينة بغداد" onerror="this.style.display='none'">
+        <h1>مطعم سفينة بغداد - FIVE STARS</h1>
+        <p>قائمة الطعام الفاخرة والأطباق المميزة</p>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+                type="text"
+                id="menu-search"
+                placeholder="ابحث عن وجبتك..."
+                autocomplete="off"
+            >
+        </div>
+
+        <div id="menu-container">
+            <!-- سيتم تعبئة الأقسام تلقائياً هنا -->
+        </div>
+    </div>
+
+    <footer>
+        <p>مطعم سفينة بغداد - FIVE STARS | جميع الحقوق محفوظة © 2026</p>
+    </footer>
+
+    <script>
+        function openImage(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+
+            modalImage.src = imageSrc;
+            modal.style.display = 'flex';
+        }
+
+        function closeImage() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+
+        const container = document.getElementById('menu-container');
+        const categoryNav = document.getElementById('category-nav');
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatPrice(price, note) {
+            if (price === null || price === undefined || price === '') {
+                return note
+                    ? `<span class="price-note">${escapeHtml(note)}</span>`
+                    : '<span class="price-note">حسب الطلب</span>';
+            }
+
+            if (typeof price === 'object') {
+                const parts = [];
+
+                if (price.medium) {
+                    parts.push(
+                        `وسط: ${Number(price.medium).toLocaleString('en-US')} د.ع`
+                    );
+                }
+
+                if (price.family) {
+                    parts.push(
+                        `عائلي: ${Number(price.family).toLocaleString('en-US')} د.ع`
+                    );
+                }
+
+                return `
+                    <div class="price-multi">
+                        ${parts.map(p => `<span>${escapeHtml(p)}</span>`).join('')}
+                    </div>
+                `;
+            }
+
+            return `${Number(price).toLocaleString('en-US')} د.ع`;
+        }
+
+        function createCategoryNav(menuData) {
+            categoryNav.innerHTML = `
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    الرئيسية
+                </button>
+
+                ${menuData.map(category => `
+                    <button onclick="scrollToCategory('${escapeHtml(category.id)}')">
+                        ${escapeHtml(category.title)}
+                    </button>
+                `).join('')}
+            `;
+        }
+
+        function scrollToCategory(categoryId) {
+            const section = document.getElementById(categoryId);
+
+            if (section) {
+                section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/menu');
+
+                if (!response.ok) {
+                    throw new Error('Failed to load menu');
+                }
+
+                const menuData = await response.json();
+
+                createCategoryNav(menuData);
+
+                container.innerHTML = menuData.map(category => `
+                    <section
+                        class="category-section"
+                        id="${escapeHtml(category.id)}"
+                    >
+                        <h2 class="category-title">
+                            ${escapeHtml(category.title)}
+                        </h2>
+
+                        <div class="menu-grid">
+                            ${category.items.map(item => `
+                                <article class="menu-card">
+                                    <img
+                                        src="${escapeHtml(item.image || '/images/logo.jpeg')}"
+                                        alt="${escapeHtml(item.name)}"
+                                        loading="lazy"
+                                        onclick="openImage('${escapeHtml(item.image || '/images/logo.jpeg')}')"
+                                        onerror="this.src='/images/logo.jpeg'"
+                                    >
+
+                                    <div class="card-content">
+                                        <h3>
+                                            ${escapeHtml(item.name)}
+                                        </h3>
+
+                                        <div class="price">
+                                            ${formatPrice(item.price, item.note)}
+                                        </div>
+                                    </div>
+                                </article>
+                            `).join('')}
+                        </div>
+                    </section>
+                `).join('');
+
+            } catch (error) {
+                console.error(error);
+
+                container.innerHTML = `
+                    <p style="
+                        text-align:center;
+                        padding:40px;
+                        font-size:18px;
+                    ">
+                        حدث خطأ في تحميل المنيو.
+                        تأكد من تشغيل السيرفر.
+                    </p>
+                `;
+            }
+        }
+
+        const searchInput = document.getElementById('menu-search');
+
+        searchInput.addEventListener('input', function () {
+            const searchText = this.value.trim().toLowerCase();
+            const sections = document.querySelectorAll('.category-section');
+
+            sections.forEach(section => {
+                const cards = section.querySelectorAll('.menu-card');
+                let visibleCards = 0;
+
+                cards.forEach(card => {
+                    const name = card.querySelector('h3')?.textContent.toLowerCase() || '';
+
+                    if (name.includes(searchText)) {
+                        card.style.display = '';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                section.style.display = visibleCards > 0 ? '' : 'none';
+            });
+        });
+
+        loadMenu();
+    </script>
+
+</body>
+</html>
