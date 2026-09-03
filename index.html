@@ -123,72 +123,45 @@
     <footer>
         <p>مطعم سفينة بغداد - FIVE STARS | جميع الحقوق محفوظة © 2026</p>
     </footer>
-
     <script>
-        // قائمة الوجبات كاملة ومقسّمة حسب التصنيفات بدقة
-        const menuCategories = [
-            {
-                categoryName: "🥩 المشويات والأطباق الرئيسية",
-                items: [
-                    "tikka-meat.jpeg", "tikka-chicken.jpeg", "tournedos-meat.jpeg", "wings-grilled.jpeg"
-                ]
-            },
-            {
-                categoryName: "🍲 الأكلات الشعبية والتشريب",
-                items: [
-                    "tashreeb-meat.jpeg", "tashreeb-chicken.jpeg", "tarshana.jpeg", "tepsi.jpeg", "zeitouniya.jpeg", "zinger-chicken.jpeg"
-                ]
-            },
-            {
-                categoryName: "🥗 المقبلات والسلطات",
-                items: [
-                    "turkish-salad.jpeg", "tuna-salad.jpeg", "turkish-labneh.jpeg", "triangle-cheese.jpeg"
-                ]
-            },
-            {
-                categoryName: "🧇 الحلويات الملكية",
-                items: [
-                    "waffle-safinat-baghdad.jpeg", "waffle-pistachio.jpeg", "waffle-lotus.jpeg", "waffle-kinder.jpeg", "waffle-plain.jpeg"
-                ]
-            },
-            {
-                categoryName: "🥤 المشروبات والعصائر",
-                items: [
-                    "tiger-energy.jpeg", "tiger-mexican.jpeg", "water-bottle.jpeg"
-                ]
-            }
-        ];
-
-        const container = document.getElementById('menu-container');
-        let htmlContent = '';
-
-        menuCategories.forEach(cat => {
-            htmlContent += `
-                <div class="category-section">
-                    <h2 class="category-title">${cat.categoryName}</h2>
-                    <div class="menu-grid">
-            `;
-
-            cat.items.forEach(file => {
-                let title = file.replace(/\.(jpeg|jpg|png|gif)$/i, '').replace(/-/g, ' ');
-                title = title.charAt(0).toUpperCase() + title.slice(1);
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('menu-container');
+    
+    fetch('/api/menu')
+        .then(response => response.json())
+        .then(menuCategories => {
+            let htmlContent = '';
+            
+            menuCategories.forEach(cat => {
+                htmlContent += `
+                    <div class="category-section">
+                        <h2 class="category-title">${cat.title}</h2>
+                        <div class="menu-grid">
+                `;
+                
+                cat.items.forEach(item => {
+                    htmlContent += `
+                        <div class="menu-card">
+                            <img src="${item.image}" alt="${item.name}" onerror="this.src='/images/logo.jpeg'">
+                            <div class="menu-card-content">
+                                <h3>${item.name}</h3>
+                                <div class="price">${item.price ? item.price + ' د.ع' : ''}</div>
+                            </div>
+                        </div>
+                    `;
+                });
                 
                 htmlContent += `
-                    <div class="menu-card">
-                        <img src="/images/${file}" alt="${title}" onerror="this.src='/images/logo.jpeg'">
-                        <div class="card-content">
-                            <h3>${title}</h3>
-                            <div class="price">حسب الطلب</div>
                         </div>
                     </div>
                 `;
             });
-
-            htmlContent += `</div></div>`;
-        });
-
-        container.innerHTML = htmlContent;
-    </script>
+            
+            container.innerHTML = htmlContent;
+        })
+        .catch(error => console.error('Error loading menu:', error));
+});
+</script>
 
 </body>
 </html>
