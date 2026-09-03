@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم سفينة بغداد - القائمة الرقمية الاحترافية</title>
+    <style>
+        :root {
+            --primary-color: #1b4332;
+            --accent-color: #d4af37;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --price-color: #c92a2a;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tahoma', 'Cairo', sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border-bottom: 4px solid var(--accent-color);
+        }
+        header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-color);
+            margin-bottom: 12px;
+            object-fit: cover;
+        }
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .category-section {
+            margin-bottom: 40px;
+        }
+        .category-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .menu-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #eaeaea;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+        .menu-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background-color: #f1f3f5;
+        }
+        .card-content {
+            padding: 15px;
+            text-align: center;
+        }
+        .card-content h3 {
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--price-color);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 40px;
+            border-top: 3px solid var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="/images/logo.jpeg" alt="شعار سفينة بغداد" onerror="this.style.display='none'">
+        <h1>مطعم سفينة بغداد - FIVE STARS</h1>
+        <p>قائمة الطعام الفاخرة والأطباق المميزة</p>
+    </header>
+
+    <div class="container" id="menu-container">
+        <!-- سيتم تعبئة الأقسام تلقائياً هنا -->
+    </div>
+
+    <footer>
+        <p>مطعم سفينة بغداد - FIVE STARS | جميع الحقوق محفوظة © 2026</p>
+    </footer>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('menu-container');
+    
+    fetch('/api/menu')
+        .then(response => response.json())
+        .then(menuCategories => {
+            let htmlContent = '';
+            
+            menuCategories.forEach(cat => {
+                htmlContent += `
+                    <div class="category-section">
+                        <h2 class="category-title">${cat.title}</h2>
+                        <div class="menu-grid">
+                `;
+                
+                cat.items.forEach(item => {
+                    htmlContent += `
+                        <div class="menu-card">
+                            <img src="${item.image}" alt="${item.name}" onerror="this.src='/images/logo.jpeg'">
+                            <div class="menu-card-content">
+                                <h3>${item.name}</h3>
+                                <div class="price">${item.price ? item.price + ' د.ع' : ''}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                htmlContent += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = htmlContent;
+        })
+        .catch(error => console.error('Error loading menu:', error));
+});
+</script>
+
+</body>
+</html>
